@@ -1,0 +1,29 @@
+{
+  "name": "Work-Schedule-Handler-",
+  "version": "1.0.0",
+  "description": "A role-based schedule handling application designed for workplace environments where management can create and manage employee work schedules, while general workers can securely view only their assigned schedules. The system uses employee ID–based authentication and enforces access control to ensure privacy and data security.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hitboyromance-bit/Work-Schedule-Handler-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hitboyromance-bit/Work-Schedule-Handler-/issues"
+  },
+  "homepage": "https://github.com/hitboyromance-bit/Work-Schedule-Handler-#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.1.5"
+  }
+}
