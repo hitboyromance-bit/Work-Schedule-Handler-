@@ -2,7 +2,7 @@
 
 ## 0) Current Repository Status (as of April 1, 2026)
 - Repository currently contains top-level scaffolding and documentation.
-- `src/server.js` and `src/public/index.html` exist but are not yet implemented.
+- `src/server.js` and backend API scaffolding are implemented; frontend remains minimal (`src/public/index.html`).
 - This document describes the **target architecture**, not the current runtime behavior.
 
 ---

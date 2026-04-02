@@ -35,7 +35,14 @@ function verifyAccessToken(token) {
   }
 
   const expected = sign(encodedPayload);
-  if (signature !== expected) {
+  const providedBuffer = Buffer.from(signature, 'base64url');
+  const expectedBuffer = Buffer.from(expected, 'base64url');
+
+  if (providedBuffer.length !== expectedBuffer.length) {
+    throw new Error('Invalid token signature');
+  }
+
+  if (!crypto.timingSafeEqual(providedBuffer, expectedBuffer)) {
     throw new Error('Invalid token signature');
   }
 
