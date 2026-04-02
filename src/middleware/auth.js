@@ -1,7 +1,8 @@
 const ApiError = require('../utils/ApiError');
 const { verifyAccessToken } = require('../services/token.service');
+const User = require('../models/User');
 
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const authorization = req.headers.authorization || '';
   const [scheme, token] = authorization.split(' ');
 
@@ -10,7 +11,21 @@ function requireAuth(req, res, next) {
   }
 
   try {
-    req.user = verifyAccessToken(token);
+    const payload = verifyAccessToken(token);
+    const user = await User.findById(payload.sub).select('-passwordHash');
+
+    if (!user || !user.isActive) {
+      return next(new ApiError(401, 'AUTH_INVALID_TOKEN', 'User for this token no longer exists.'));
+    }
+
+    req.user = {
+      sub: user._id.toString(),
+      employeeId: user.employeeId,
+      role: user.role,
+      name: user.name,
+      department: user.department || null,
+    };
+
     return next();
   } catch (error) {
     return next(new ApiError(401, 'AUTH_INVALID_TOKEN', 'Invalid or expired token.'));

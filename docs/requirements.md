@@ -14,6 +14,11 @@ This document defines the minimum product and technical requirements for MVP imp
 - Successful login returns an access token.
 - Invalid credentials return an authentication error without disclosing which field failed.
 
+
+### FR-1b Identity Provisioning
+- System must support one-time manager bootstrap when no active manager exists.
+- Managers must be able to create worker/manager user accounts with role assignment.
+
 ### FR-2 Role-Based Authorization
 - Manager-only endpoints must reject workers with `403 Forbidden`.
 - Worker endpoints must ignore/override client-supplied employee IDs and use the authenticated identity.

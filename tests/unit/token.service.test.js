@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { signAccessToken, verifyAccessToken } = require('../../src/services/token.service');
+const { signAccessToken, verifyAccessToken, parseExpiresIn } = require('../../src/services/token.service');
 
 const user = {
   _id: { toString: () => '507f1f77bcf86cd799439011' },
@@ -17,6 +17,8 @@ test('signAccessToken and verifyAccessToken roundtrip', () => {
   assert.equal(payload.employeeId, 'E123');
   assert.equal(payload.role, 'worker');
   assert.equal(payload.name, 'Test Worker');
+  assert.equal(typeof payload.iat, 'number');
+  assert.equal(typeof payload.exp, 'number');
 });
 
 test('verifyAccessToken rejects tampered token', () => {
@@ -25,4 +27,13 @@ test('verifyAccessToken rejects tampered token', () => {
   const tamperedSignature = signature.slice(0, -1) + (signature.endsWith('A') ? 'B' : 'A');
 
   assert.throws(() => verifyAccessToken(`${payload}.${tamperedSignature}`));
+});
+
+test('parseExpiresIn supports ms/s/m/h/d and fallback', () => {
+  assert.equal(parseExpiresIn('1500ms'), 1500);
+  assert.equal(parseExpiresIn('30s'), 30000);
+  assert.equal(parseExpiresIn('5m'), 300000);
+  assert.equal(parseExpiresIn('2h'), 7200000);
+  assert.equal(parseExpiresIn('1d'), 86400000);
+  assert.equal(parseExpiresIn('invalid'), 3600000);
 });

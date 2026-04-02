@@ -13,13 +13,36 @@ function sign(data) {
   return crypto.createHmac('sha256', env.jwtSecret).update(data).digest('base64url');
 }
 
+function parseExpiresIn(expiresIn) {
+  const raw = String(expiresIn || '1h').trim();
+  const match = raw.match(/^(\d+)(ms|s|m|h|d)?$/i);
+
+  if (!match) {
+    return 60 * 60 * 1000;
+  }
+
+  const value = Number(match[1]);
+  const unit = (match[2] || 'ms').toLowerCase();
+  const multipliers = {
+    ms: 1,
+    s: 1000,
+    m: 60 * 1000,
+    h: 60 * 60 * 1000,
+    d: 24 * 60 * 60 * 1000,
+  };
+
+  return value * multipliers[unit];
+}
+
 function signAccessToken(user) {
+  const now = Date.now();
   const payload = {
     sub: user._id.toString(),
     employeeId: user.employeeId,
     role: user.role,
     name: user.name,
-    exp: Date.now() + 60 * 60 * 1000,
+    iat: now,
+    exp: now + parseExpiresIn(env.jwtExpiresIn),
   };
 
   const encodedPayload = encode(payload);
@@ -54,4 +77,4 @@ function verifyAccessToken(token) {
   return payload;
 }
 
-module.exports = { signAccessToken, verifyAccessToken };
+module.exports = { signAccessToken, verifyAccessToken, parseExpiresIn };
