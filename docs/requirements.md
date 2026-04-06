@@ -26,6 +26,7 @@ This document defines the minimum product and technical requirements for MVP imp
 ### FR-3 Schedule Retrieval (Worker)
 - A worker can retrieve their own schedules.
 - Optional date filters `from` and `to` should be supported.
+- Pagination should be supported for schedule list endpoints.
 
 ### FR-4 Schedule Management (Manager)
 - A manager can create schedules for workers.

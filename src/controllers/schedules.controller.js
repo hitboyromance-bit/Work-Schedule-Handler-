@@ -1,57 +1,84 @@
 const asyncHandler = require('../utils/asyncHandler');
 const Schedule = require('../models/Schedule');
 const ApiError = require('../utils/ApiError');
+const {
+  validateDateRangeQuery,
+  validatePaginationQuery,
+  validateCreateScheduleBody,
+  validateUpdateScheduleBody,
+  validateScheduleId,
+} = require('../validators/schedules.validator');
 
 function buildDateFilter(from, to) {
   const filter = {};
 
   if (from) {
-    filter.$gte = new Date(from);
+    filter.$gte = from;
   }
 
   if (to) {
-    filter.$lte = new Date(to);
+    filter.$lte = to;
   }
 
   return Object.keys(filter).length > 0 ? filter : null;
 }
 
+async function findSchedulesWithPagination(query, page, limit, skip) {
+  const [items, total] = await Promise.all([
+    Schedule.find(query).sort({ date: 1, startTime: 1 }).skip(skip).limit(limit),
+    Schedule.countDocuments(query),
+  ]);
+
+  return {
+    schedules: items,
+    meta: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
+  };
+}
+
 const getMySchedules = asyncHandler(async (req, res) => {
-  const dateFilter = buildDateFilter(req.query.from, req.query.to);
+  const { from, to } = validateDateRangeQuery(req.query);
+  const { page, limit, skip } = validatePaginationQuery(req.query);
+
   const query = {
     employeeId: req.user.employeeId,
   };
 
+  const dateFilter = buildDateFilter(from, to);
   if (dateFilter) {
     query.date = dateFilter;
   }
 
-  const schedules = await Schedule.find(query).sort({ date: 1, startTime: 1 });
-  res.status(200).json({ schedules });
+  const result = await findSchedulesWithPagination(query, page, limit, skip);
+  res.status(200).json(result);
 });
 
 const getSchedules = asyncHandler(async (req, res) => {
-  const dateFilter = buildDateFilter(req.query.from, req.query.to);
+  const { from, to } = validateDateRangeQuery(req.query);
+  const { page, limit, skip } = validatePaginationQuery(req.query);
+
   const query = {};
 
   if (req.query.employeeId) {
     query.employeeId = req.query.employeeId;
   }
 
+  const dateFilter = buildDateFilter(from, to);
   if (dateFilter) {
     query.date = dateFilter;
   }
 
-  const schedules = await Schedule.find(query).sort({ date: 1, startTime: 1 });
-  res.status(200).json({ schedules });
+  const result = await findSchedulesWithPagination(query, page, limit, skip);
+  res.status(200).json(result);
 });
 
 const createSchedule = asyncHandler(async (req, res) => {
-  const { employeeId, date, startTime, endTime, location, notes } = req.body || {};
-
-  if (!employeeId || !date || !startTime || !endTime) {
-    throw new ApiError(400, 'VALIDATION_ERROR', 'employeeId, date, startTime, and endTime are required.');
-  }
+  validateCreateScheduleBody(req.body);
+  const { employeeId, date, startTime, endTime, location, notes } = req.body;
 
   const schedule = await Schedule.create({
     employeeId,
@@ -67,6 +94,9 @@ const createSchedule = asyncHandler(async (req, res) => {
 });
 
 const updateSchedule = asyncHandler(async (req, res) => {
+  validateScheduleId(req.params.id);
+  validateUpdateScheduleBody(req.body);
+
   const schedule = await Schedule.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -80,6 +110,8 @@ const updateSchedule = asyncHandler(async (req, res) => {
 });
 
 const cancelSchedule = asyncHandler(async (req, res) => {
+  validateScheduleId(req.params.id);
+
   const schedule = await Schedule.findByIdAndUpdate(
     req.params.id,
     { status: 'cancelled' },
