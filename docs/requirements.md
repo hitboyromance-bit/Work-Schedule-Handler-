@@ -32,6 +32,7 @@ This document defines the minimum product and technical requirements for MVP imp
 - A manager can create schedules for workers.
 - A manager can update schedule details.
 - A manager can cancel schedules (soft delete).
+- The API must reject overlapping shifts for the same employee on the same day.
 
 ### FR-5 Validation & Errors
 - API must validate request payloads and query parameters.

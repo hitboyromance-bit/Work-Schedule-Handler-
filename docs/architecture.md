@@ -249,17 +249,21 @@ This order minimizes rework and gives a usable vertical slice early.
 ---
 
 ## 11) Immediate Implementation Checklist
-- [ ] Create `src/app.js` and wire middleware/error handlers.
-- [ ] Implement `src/server.js` startup flow (`env` -> `db` -> `listen`).
-- [ ] Add `User` and `Schedule` mongoose models with indexes.
-- [ ] Implement `POST /api/v1/auth/login`.
-- [ ] Implement `GET /api/v1/users/me`.
-- [ ] Implement `GET /api/v1/schedules/me`.
-- [ ] Implement manager-only schedule CRUD routes.
-- [ ] Add integration tests for auth + authorization boundaries.
+- [x] Create `src/app.js` and wire middleware/error handlers.
+- [x] Implement `src/server.js` startup flow (`env` -> `db` -> `listen`).
+- [x] Add `User` and `Schedule` mongoose models with indexes.
+- [x] Implement `POST /api/v1/auth/login`.
+- [x] Implement `GET /api/v1/users/me`.
+- [x] Implement `GET /api/v1/schedules/me`.
+- [x] Implement manager-only schedule CRUD routes.
+- [x] Add integration tests for auth + authorization boundaries.
 
-## 12) Open Decisions
-- Use `employeeId` string directly on schedules vs ObjectId `user` references.
-- Choose testing framework (`Jest` vs `Vitest`).
-- Decide token revocation strategy (none, denylist, short-lived access + refresh).
+## 12) Current Decisions (as of April 2, 2026)
+- **Schedule ownership key**: keep `employeeId` on schedules for MVP simplicity.
+- **Token revocation strategy**: none for MVP; use short-lived access token and re-login.
+- **Testing stack**: Node built-in test runner (`node --test`) for current phase.
 
+## 13) Next Engineering Priorities
+- Add overlap protections and stronger manager schedule workflows.
+- Add deterministic seed script for local demos and QA.
+- Expand integration coverage for role/route behavior.

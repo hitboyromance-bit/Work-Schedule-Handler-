@@ -11,3 +11,5 @@ A role-based schedule handling application designed for workplace environments w
 1. Set environment variables (`PORT`, `MONGODB_URI`, `JWT_SECRET`) as needed.
 2. Start the API: `npm start`.
 3. Run tests: `npm test`.
+4. Seed demo data: `npm run seed`.
+5. Run syntax lint: `npm run lint`.

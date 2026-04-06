@@ -10,7 +10,10 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node src/server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "lint": "node scripts/lint.js",
+    "format": "node scripts/format.js",
+    "seed": "node scripts/seed.js"
   },
   "repository": {
     "type": "git",
